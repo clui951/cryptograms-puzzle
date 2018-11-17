@@ -1,14 +1,18 @@
-import re
-
 class Puzzle:
-    def __init__(self, input_string):
+    def __init__(self, input_string, solution_string = None):
         self.input_string = input_string.upper()
-        self.input_list = list(input_string)
+        self.input_list = list(self.input_string)
 
         self.input_char_to_output_char = None
         self.input_char_to_pos_list = None
         self.reset_output_list()
 
+        if solution_string:
+            self.solution_string = solution_string.upper()
+            self.solution_list = list(self.solution_string)
+        else:
+            self.solution_string = None
+            self.solution_list = None
 
     def reset_output_list(self):
         """
@@ -53,6 +57,14 @@ class Puzzle:
             self.output_list[i] = output_char
         return True
 
+
+    def output_matches_solution(self):
+        """
+        :return: True/False whether output matches solution; default False if no solution
+        """
+        if not self.solution_list:
+            return False
+        return self.output_list == self.solution_list
 
     def all_letters_mapped(self):
         """

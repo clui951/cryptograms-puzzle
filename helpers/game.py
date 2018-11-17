@@ -1,6 +1,22 @@
+import enum
 import string
 
 from helpers.puzzle import Puzzle
+
+
+class Actions(enum.Enum):
+    MAP = "map"
+    UNMAP = "unmap"
+    RESET = "reset"
+    QUIT = "quit"
+
+    @classmethod
+    def get_actions_string(cls):
+        return ", ".join([a.value for a in list(Actions)])
+
+    @classmethod
+    def has_value(cls, value):
+        return any(value == item.value for item in cls)
 
 class Game:
     def __init__(self):
@@ -13,31 +29,43 @@ class Game:
 
 
     def run(self):
-        while not self.puzzle.all_letters_mapped():
-            input_char, output_char = self.prompt_char_map()
-
-            if not self.puzzle.map_char(input_char, output_char):
-                print("Mapping {0} to {1} {2}".format(input_char, output_char, "failed."))
-                continue
-            print("Mapping {0} to {1} {2}".format(input_char, output_char, "succeeded."))
-
+        while not self.puzzle.output_matches_solution():
+            print("\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=")
             self.puzzle.print_state()
 
+            action_string = input("Choose action ({}): ".format(Actions.get_actions_string()))
+            if not Actions.has_value(action_string):
+                print("Invalid action!")
+                continue
 
-    def prompt_char_map(self):
-        print()
-        input_char = None
-        while input_char == None:
-            input_char = input("Enter letter to map: ").upper()
-            if len(input_char) == 1 and input_char.upper() in string.ascii_letters:
-                break
+            action = Actions(action_string)
+            self.action_fanout(action)
+
+
+    def action_fanout(self, action):
+        if action == Actions.MAP:
+            self.do_map_action()
+        else:
+            print("WARNING: ACTION NOT YET IMPLEMENTED")
+            return
+
+
+    def do_map_action(self):
+        # Prompt for input char
+        input_char = input("Enter letter to map: ").upper()
+        if len(input_char) != 1 and input_char.upper() not in string.ascii_letters:
             print("Letter must be a single alphabetical character.")
+            return
 
-        output_char = None
-        while output_char == None:
-            output_char = input("Enter letter to map {0} to: ".format(input_char)).upper()
-            if len(output_char) == 1 and output_char.upper() in string.ascii_letters:
-                break
+        # Prompt for output char
+        output_char = input("Enter letter to map {0} to: ".format(input_char)).upper()
+        if len(output_char) != 1 and output_char.upper() not in string.ascii_letters:
             print("Letter must be a single alphabetical character.")
+            return
 
-        return input_char.upper(), output_char.upper()
+        # Perform map
+        if not self.puzzle.map_char(input_char, output_char):
+            print("Mapping {0} to {1} {2}".format(input_char, output_char, "failed."))
+            return
+        print("Mapping {0} to {1} {2}".format(input_char, output_char, "succeeded."))
+
