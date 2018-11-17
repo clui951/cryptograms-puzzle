@@ -1,5 +1,6 @@
 import enum
 import string
+import sys
 
 from helpers.puzzle import Puzzle
 
@@ -21,6 +22,7 @@ class Actions(enum.Enum):
 class Game:
     def __init__(self):
         self.puzzle = None
+        self.quit = False
 
 
     def create_game(self):
@@ -29,7 +31,7 @@ class Game:
 
 
     def run(self):
-        while not self.puzzle.output_matches_solution():
+        while not self.quit and not self.puzzle.output_matches_solution():
             print("\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=")
             self.puzzle.print_state()
 
@@ -45,9 +47,12 @@ class Game:
     def action_fanout(self, action):
         if action == Actions.MAP:
             self.do_map_action()
+        elif action == Actions.RESET:
+            self.do_reset_action()
+        elif action == Actions.QUIT:
+            self.do_quit_action()
         else:
             print("WARNING: ACTION NOT YET IMPLEMENTED")
-            return
 
 
     def do_map_action(self):
@@ -69,3 +74,10 @@ class Game:
             return
         print("Mapping {0} to {1} {2}".format(input_char, output_char, "succeeded."))
 
+
+    def do_reset_action(self):
+        self.puzzle.reset()
+
+
+    def do_quit_action(self):
+        self.quit = True

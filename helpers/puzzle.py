@@ -5,7 +5,7 @@ class Puzzle:
 
         self.input_char_to_output_char = None
         self.input_char_to_pos_list = None
-        self.reset_output_list()
+        self.reset()
 
         if solution_string:
             self.solution_string = solution_string.upper()
@@ -14,7 +14,7 @@ class Puzzle:
             self.solution_string = None
             self.solution_list = None
 
-    def reset_output_list(self):
+    def reset(self):
         """
         Resets char mapping and output
         :return: None
